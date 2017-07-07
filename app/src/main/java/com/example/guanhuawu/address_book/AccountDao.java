@@ -13,26 +13,25 @@ import java.util.List;
 
 public class AccountDao {
 
-
     private Context context;
     private Dao<Account,Integer> accountDaoOpen;
     private DateBaseHelper helper;
 
     public AccountDao(Context context){
         this.context = context;
+        helper = new DateBaseHelper(context);
     }
 
-    public Dao<Account,Integer> getAccountDao(Context context) throws SQLException {
-        helper = new DateBaseHelper(context);
+    public Dao<Account,Integer> getAccountDao() throws SQLException {
         return helper.getDao(Account.class);
     }
 
     @SuppressWarnings("unchecked")
     public void add(Account account) throws SQLException {
-        getAccountDao(this.context).create(account);
+        getAccountDao().create(account);
     }
     @SuppressWarnings("unchecked")
     public List<Account> getAll() throws SQLException {
-        return getAccountDao(this.context).queryForAll();
+        return getAccountDao().queryForAll();
     }
 }
