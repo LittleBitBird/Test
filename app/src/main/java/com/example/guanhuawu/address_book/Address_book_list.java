@@ -1,6 +1,5 @@
 package com.example.guanhuawu.address_book;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -49,16 +48,19 @@ public class Address_book_list extends AppCompatActivity {
             }
         });
         Log.d("1", "onClick: success 测试");
+        try {
+            accountDao = new AccountDao(this);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @OnClick(R.id.Query)
     public void Query() {
         textView.setText("成功1");
         Account account = new Account();
-        Context context = Address_book_list.this;
-        accountDao = new AccountDao(context);
         try {
-            account = accountDao.getAll().get(0);
+            account = accountDao.getAccountDao().queryForAll().get(0);
             Log.d("query", "onClick: " + account.getTitle());
         } catch (SQLException e) {
             e.printStackTrace();
@@ -71,10 +73,8 @@ public class Address_book_list extends AppCompatActivity {
         textView.setText("成功2");
         Account account = new Account();
         account.setTitle("SQ");
-        Context context = Address_book_list.this;
-        accountDao = new AccountDao(context);
         try {
-            accountDao.add(account);
+            accountDao.getAccountDao().create(account);
             Log.d("create", "onClick: 成功");
             textView.setText("成功");
         } catch (SQLException e) {

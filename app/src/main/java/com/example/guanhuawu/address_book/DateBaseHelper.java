@@ -2,6 +2,7 @@ package com.example.guanhuawu.address_book;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
@@ -19,9 +20,11 @@ import java.util.Map;
 public class DateBaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String TABLE_NAME = "sqlite-test.db";
+    private Context context;
 
     public DateBaseHelper(Context context) {
-        super(context, TABLE_NAME, null, 1);
+        super(context, TABLE_NAME, null, 41);
+        this.context = context;
     }
 
     private Map<String, Dao> daos = new HashMap<String, Dao>();
@@ -39,8 +42,14 @@ public class DateBaseHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, ConnectionSource connectionSource, int i, int i1) {
         try {
-            TableUtils.dropTable(connectionSource, Account.class, true);
-            onCreate(sqLiteDatabase, connectionSource);
+            Log.e("update","old"+i+"new"+i1);
+
+            getAccountDao().executeRaw("ALTER TABLE `AccountList` RENAME TO 'AccountOld3';");
+            TableUtils.createTable(connectionSource, Account.class);
+            getAccountDao().executeRaw("insert into AccountList (id,title,book,bookName) select id,title,Book,BookName from AccountOld");
+            Log.e("update","Success");
+//            TableUtils.dropTable(connectionSource, Account.class, true);
+//            onCreate(sqLiteDatabase, connectionSource);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -82,5 +91,10 @@ public class DateBaseHelper extends OrmLiteSqliteOpenHelper {
             dao = null;
         }
     }
+
+    public Dao getAccountDao() throws SQLException {
+        return getDao(Account.class);
+    }
+
 
 }
